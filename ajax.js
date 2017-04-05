@@ -1,5 +1,6 @@
 /**
- * Created by xyw on 16/8/24.
+ * Created by jeeinn on 16/8/24.
+ * https://github.com/jeeinn/ajax-bone
  */
 
 ;(function (window) {
@@ -31,7 +32,12 @@
                 if(options.dataType === "jsonp" ){
                     //jsonp to do
                 }
-                xhr.open(options.type, options.url + "?" + params, true);
+                if(/[?&]/.test(options.url)){
+                    params = '&' + params;
+                }else {
+                    params = '?' + params;
+                }
+                xhr.open(options.type, options.url + params, true);
                 setHeaders(xhr,options.headers);
                 xhr.responseType = options.dataType;
                 xhr.send();
@@ -54,15 +60,16 @@
     function Ajax(options) {
         //第零步 - 初始化配置
         options = options || {};
-        options.type = (options.type || "GET").toUpperCase();
-        options.dataType = options.dataType || "json";
+        options.type = (options.type || 'GET').toUpperCase();
+        options.dataType = options.dataType || 'json';
         options.headers = options.headers || {};
         options.timeout = options.timeout || 60;    // 默认超时 60s
         options.cache = options.cache || false;
         options.async = true;
-        if(options.dataType === "jsonp"){
-            options.type = "GET"
+        if(options.dataType === 'jsonp'){
+            options.type = 'GET';
         }
+        var res_data = {};
 
         //第一步 - 创建xhr - 及非IE6
         if (window.XMLHttpRequest) {
@@ -71,7 +78,7 @@
             var xhr = new ActiveXObject('Microsoft.XMLHTTP');
         }
         if(xhr === undefined || xhr === null){
-            console.log("Ajax:Your browser does not support XMLHttpRequest.");
+            console.warn('Ajax:Your browser does not support XMLHttpRequest.');
         }
 
         //第二步 - 设置 和 发送数据
@@ -82,7 +89,7 @@
         }else{
             xhr.timeout = 0;
             xhr.withCredentials = false;
-            xhr.responseType = "";//注意必须为""
+            xhr.responseType = '';//注意必须为""
             xhrSendData(xhr,options);
         }
 
@@ -102,11 +109,14 @@
 
         //请求成功完成处理
         xhr.onload = function () {
+            // console.log('onload');
             var status = xhr.status;
+            res_data.code = status;
+            res_data.result = xhr.response || xhr.statusText;
             if (status >= 200 && status < 300 || status === 304) {
-                options.success && options.success(xhr.response);
+                options.success && options.success(res_data);
             } else {
-                options.fail && options.fail(status,xhr.response || xhr.statusText);
+                options.fail && options.fail(res_data);
             }
         };
 
