@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test-ajax</title>
+</head>
+<body>
+test for ajax
+<button onclick="test()">click</button>
+</body>
+<script src="ajax.js"></script>
+<script>
+    /* ajax示例 */
+    function test() {
+        Ajax({
+            url: "https://www.baidu.com/s?tn=json&pn=0&rn=3&wd=jeeinn",              //请求地址
+            type: "get",                       //请求方式
+            data: { ads: "super", app_version: 20 },   //请求参数
+            dataType: "json",                     //预期返回类型 ,jsonp
+            //headers: {Company: "jeeinn.com"},   //自定义请求头
+            //timeout:20,                          //单位秒,默认0
+            //cache:true,                        //是否开启缓存
+            async:false,                         //是否是异步
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (response) {
+                // 此处放成功后执行的代码
+                alert(response.code + "::" + response.result);
+            },
+            fail: function (status,response) {
+                // 此处放失败后执行的代码
+                alert('status:' + status + "-- response" + response);
+            }
+        });
+    }
+</script>
+</html>
